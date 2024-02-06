@@ -1,0 +1,31 @@
+version: "3"
+services:
+  web-app:
+    build: .
+    image: mahithchigurupati/webapp-gcp
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+
+  db:
+    image: postgres:latest
+    env_file:
+      - .env
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    command:
+      [
+        "postgres",
+        "-c",
+        "listen_addresses=0.0.0.0",
+        "-c",
+        "max_connections=200",
+      ]
+
+volumes:
+  postgres-db:
