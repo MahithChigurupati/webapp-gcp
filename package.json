@@ -1,0 +1,31 @@
+{
+  "name": "shortly",
+  "version": "1.0.0",
+  "description": "A repo to design and develop a API service",
+  "main": "server.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon -L index.js",
+    "test": "mocha ./test/test.spec.js --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MahithChigurupati/webapp-gcp.git"
+  },
+  "author": "MahithChigurupati",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^5.0.3",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mocha": "^10.2.0",
+    "moment": "^2.30.1",
+    "pg": "^8.11.3",
+    "sequelize": "^6.34.0",
+    "supertest": "^6.3.3"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.11",
+    "nodemon": "^3.0.3"
+  }
+}
