@@ -2,11 +2,12 @@ version: "3"
 services:
   web-app:
     build: .
-    image: mahithchigurupati/webapp-gcp
+    image: mahithchigurupati/webapp-gcp:latest
     ports:
       - "8080:8080"
     depends_on:
       - db
+      - db-migration
     env_file:
       - .env
     environment:
@@ -26,6 +27,14 @@ services:
         "-c",
         "max_connections=200",
       ]
+
+  db-migration:
+    image: mahithchigurupati/webapp-db:latest
+    command: ["migrate"]
+    depends_on:
+      - db
+    env_file:
+      - .env
 
 volumes:
   postgres-db:
