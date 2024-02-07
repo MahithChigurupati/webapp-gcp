@@ -33,6 +33,13 @@ pipeline {
             }
         }
 
+        stage('Install npx') {
+            steps {
+                script {
+                    sh 'npm install -g npx'
+                }
+            }
+
         stage('Semantic Release') {
             steps {
                 script {
