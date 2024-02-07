@@ -39,6 +39,7 @@ pipeline {
                     sh 'npm install -g npx'
                 }
             }
+        }
 
         stage('Semantic Release') {
             steps {
