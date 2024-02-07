@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
         DOCKER_IMAGE_NAME = 'mahithchigurupati/webapp-gcp'
-        TAG = "latest"
+        VERSION = "latest"
     }
     
     stages {
@@ -17,7 +17,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE_NAME}:${TAG}")
+                    docker.build("${DOCKER_IMAGE_NAME}:${VERSION}")
                 }
             }
         }
@@ -25,9 +25,18 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_HUB_CREDENTIALS) {
-                        docker.image("${DOCKER_IMAGE_NAME}:${TAG}").push()
+                    withDockerRegistry(credentialsId: 'docker-hub-credentials') {
+                        docker.image(DOCKER_IMAGE_NAME).push("${VERSION}")
                     }
+                    
+                }
+            }
+        }
+
+        stage('Semantic Release') {
+            steps {
+                script {
+                    sh 'npx semantic-release'
                 }
             }
         }
@@ -35,11 +44,12 @@ pipeline {
     
     post {
         success {
-            echo 'Docker image build and push successful!'
+            echo 'Pipeline succeeded!'
         }
         failure {
-            echo 'Docker image build or push failed!'
-            currentBuild.result = 'FAILURE'
+            echo 'Pipeline failed!'
         }
     }
 }
+
+

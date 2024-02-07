@@ -37,8 +37,8 @@ spec:
             - name: FLYWAY_SCHEMAS
               valueFrom:
                 secretKeyRef:
-                  name: webapp-secret
-                  key: DB_DATABASE
+                  name: postgres-secret
+                  key: POSTGRES_DB
           volumeMounts:
             - name: flyway-scripts
               mountPath: /flyway/sql
@@ -47,32 +47,11 @@ spec:
           image: mahithchigurupati/webapp-gcp:latest
           ports:
             - containerPort: 8080
-          env:
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_USER
-            - name: DB_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_PASSWORD
-            - name: DB_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: webapp-secret
-                  key: DB_DATABASE
-            - name: DB_DIALECT
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_DB
-            - name: DB_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: postgres-config
-                  key: DB_HOST
+          envFrom:
+            - secretRef:
+                name: postgres-secret
+            - configMapRef:
+                name: postgres-config
           resources:
             limits:
               cpu: "1"
