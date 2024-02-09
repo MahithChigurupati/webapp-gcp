@@ -6,6 +6,10 @@ pipeline {
         DOCKER_IMAGE_NAME = 'mahithchigurupati/webapp-gcp'
         VERSION = "latest"
     }
+
+    tools {
+        nodejs 'nodejs'
+    }
     
     stages {
         stage('Checkout') {
