@@ -38,7 +38,7 @@ pipeline {
         stage('Install npx') {
             steps {
                 script {
-                    sh 'npm install -g npx'
+                    sh 'npm install -g npx --force'
                 }
             }
         }
