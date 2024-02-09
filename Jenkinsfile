@@ -36,6 +36,7 @@ pipeline {
         stage('Semantic Release') {
             steps {
                 script {
+                    sh 'npm install -g semantic-release'
                     sh 'semantic-release'
                 }
             }
