@@ -6,8 +6,6 @@ pipeline {
         DOCKER_IMAGE_NAME = 'mahithchigurupati/webapp-gcp'
         VERSION = "latest"
     }
-
-    tools {nodejs "nodejs"}
     
     stages {
         stage('Checkout') {
@@ -35,18 +33,10 @@ pipeline {
             }
         }
 
-        stage('Install npx') {
-            steps {
-                script {
-                    sh 'npm install -g npx --force'
-                }
-            }
-        }
-
         stage('Semantic Release') {
             steps {
                 script {
-                    sh 'npx semantic-release'
+                    sh 'semantic-release'
                 }
             }
         }
