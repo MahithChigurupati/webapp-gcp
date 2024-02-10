@@ -5,7 +5,7 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
         DOCKER_IMAGE_NAME = 'mahithchigurupati/webapp-gcp'
         VERSION = "latest"
-        GITHUB_TOKEN = 'GITHUB_TOKEN'
+        GH_TOKEN = credentials('GITHUB_TOKEN')
 
     }
 
