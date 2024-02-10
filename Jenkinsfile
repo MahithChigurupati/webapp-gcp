@@ -47,7 +47,10 @@ pipeline {
 
                     // Extract the version determined by semantic-release
                     def version = sh(returnStdout: true, script: 'semantic-release --dry-run | grep "Release version" | cut -d \':\' -f 2').trim()
-                    
+
+                    // Ensure the version adheres to Docker image tag pattern
+                    version = version.replaceAll(/[^a-zA-Z0-9_.-]/, '_')
+
                     // Tag the Docker image with the semantic version
                     docker.image("${DOCKER_IMAGE_NAME}:${version}").tag("${DOCKER_IMAGE_NAME}:latest")
                 }
