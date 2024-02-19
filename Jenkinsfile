@@ -1,63 +1,57 @@
 pipeline {
     agent any
     
-    environment {
-        DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials'
-        DOCKER_IMAGE_NAME = 'mahithchigurupati/webapp-gcp'
-        VERSION = "latest"
-        GH_TOKEN = credentials('GITHUB_TOKEN')
-
-    }
-
-    tools {
+    tools{
         nodejs 'nodejs'
     }
-    
+
+    environment {
+        DOCKERHUB_CREDENTIALS = 'docker-hub-credentials'
+        DOCKER_IMAGE_NAME = 'mahithchigurupati/webapp-gcp'
+        GITHUB_TOKEN = 'github-access-token'
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
-        
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    docker.build("${DOCKER_IMAGE_NAME}:${VERSION}")
-                }
-            }
-        }
-        
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    withDockerRegistry(credentialsId: 'docker-hub-credentials') {
-                        docker.image(DOCKER_IMAGE_NAME).push("${VERSION}")
-                    }
-                    
-                }
-            }
-        }
 
         stage('Semantic Release') {
             steps {
                 script {
-                    sh 'npm install -g semantic-release'
-                    sh 'semantic-release'
+                    withCredentials([string(credentialsId: GITHUB_TOKEN, variable: 'GH_TOKEN')]) {
+                        env.GIT_LOCAL_BRANCH='main'
+                        sh "npm i -g semantic-release"
+                        sh "npm install -g @semantic-release/git"
+                        sh "semantic-release"
+                    }
+                    
+                    LATEST_TAG = sh(script: 'git describe --tags --abbrev=0', returnStdout: true).trim()
+                }
+            }                    
+        }
 
-                    // Extract the version determined by semantic-release
-                    def version = sh(returnStdout: true, script: 'semantic-release --dry-run | grep "Release version" | cut -d \':\' -f 2').trim()
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("${DOCKER_IMAGE_NAME}:${LATEST_TAG}")
+                }
+            }
+        }
 
-                    // Ensure the version adheres to Docker image tag pattern
-                    version = version.replaceAll(/[^a-zA-Z0-9_.-]/, '_')
-
-                    // Tag the Docker image with the semantic version
-                    docker.image("${DOCKER_IMAGE_NAME}:${version}").tag("${DOCKER_IMAGE_NAME}:latest")
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: DOCKERHUB_CREDENTIALS) {
+                        docker.image("${DOCKER_IMAGE_NAME}:${LATEST_TAG}").push("${LATEST_TAG}")
+                    }
                 }
             }
         }
     }
-    
+
     post {
         success {
             echo 'Pipeline succeeded!'
@@ -67,5 +61,3 @@ pipeline {
         }
     }
 }
-
-
